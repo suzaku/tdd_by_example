@@ -5,8 +5,12 @@ class TestCase(object):
     def run(self):
         self.setUp()
         getattr(self, self.name)()
+        self.tearDown()
 
     def setUp(self):
+        pass
+
+    def tearDown(self):
         pass
 
 
@@ -14,24 +18,21 @@ class WasRun(TestCase):
 
     def setUp(self):
         self.wasRun = False
-        self.wasSetUp = True
+        self.log = 'setUp'
 
     def testMethod(self):
         self.wasRun = True
+        self.log += ' testMethod'
+
+    def tearDown(self):
+        self.log += ' tearDown'
 
 
 class TestCaseTest(TestCase):
 
-    def setUp(self):
-        self.test = WasRun("testMethod")
+    def testTemplateMethod(self):
+        test = WasRun("testMethod")
+        test.run()
+        assert test.log == 'setUp testMethod tearDown'
 
-    def testRunning(self):
-        self.test.run()
-        assert self.test.wasRun
-
-    def testSetUp(self):
-        self.test.run()
-        assert self.test.wasSetUp
-
-TestCaseTest("testRunning").run()
-TestCaseTest("testSetUp").run()
+TestCaseTest("testTemplateMethod").run()
